@@ -2,11 +2,12 @@ import { MessageCircle, Instagram, Crown, LogOut } from 'lucide-react';
 import Logo from './Logo';
 
 interface HeaderProps {
-  esPro: boolean;
+  isPro: boolean;
   onLogout: () => void;
+  onProClick: () => void;
 }
 
-export default function Header({ esPro, onLogout }: HeaderProps) {
+export default function Header({isPro,onLogout,onProClick}:HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/5">
       <div className="flex items-center justify-between px-4 py-3 max-w-md mx-auto">
