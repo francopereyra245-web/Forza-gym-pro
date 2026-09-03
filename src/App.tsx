@@ -14,7 +14,7 @@ function getRutinaHoy(rutinas: Rutina[]): Rutina | null {
     0: 'Dom', 1: 'Lun', 2: 'Mar', 3: 'Mie', 4: 'Jue', 5: 'Vie', 6: 'Sab',
   };
   const hoyLabel = diaMap[hoy];
-  return rutinas.find((r) => r.dias.includes(hoyLabel))?? rutinas[0]?? null;
+  return rutinas.find((r) => r.dias.includes(hoyLabel)) ?? rutinas[0] ?? null;
 }
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
   if (loggedOut) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-4">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-5 shadow-lg shadow-yellow-500/30">
           <span className="text-3xl font-black text-black">F</span>
         </div>
         <h1 className="text-3xl font-black text-white tracking-tight">FORZA</h1>
@@ -35,7 +35,7 @@ function App() {
         <p className="text-sm text-gray-500 mt-6 max-w-xs">Cerraste sesión. Volvé cuando estés listo para entrenar.</p>
         <button
           onClick={() => setLoggedOut(false)}
-          className="mt-6 px-8 py-3.5 rounded-2xl bg-yellow-400 text-black font-bold text-sm hover:bg-yellow-300 active:scale-95 transition"
+          className="mt-6 px-8 py-3.5 rounded-2xl bg-yellow-400 text-black font-bold text-sm hover:bg-yellow-300 active:scale-95 transition-all shadow-lg shadow-yellow-500/20"
         >
           Volver a entrar
         </button>
@@ -47,7 +47,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <Header esPro={data.esPro} onLogout={() => setLoggedOut(true)} onProClick={() => setTabActiva('planes')} />
+      <Header esPro={data.esPro} onLogout={() => setLoggedOut(true)} />
+
       <main className="max-w-md mx-auto pb-20 min-h-screen">
         {tabActiva === 'rutinas' && (
           <RutinasTab
@@ -58,25 +59,24 @@ function App() {
           />
         )}
         {tabActiva === 'entrenar' && (
-          <EntrenarTab
-            rutinaHoy={rutinaHoy}
-            onAddSesion={addSesion}
-          />
+          <EntrenarTab rutinaHoy={rutinaHoy} onCompleteSesion={addSesion} />
         )}
         {tabActiva === 'progreso' && (
           <ProgresoTab
+            sesiones={data.sesiones}
             registrosPeso={data.registrosPeso}
             fotosProgreso={data.fotosProgreso}
-            onAddPeso={addRegistroPeso}
-            onAddFoto={addFotoProgreso}
-            onDeleteFoto={deleteFotoProgreso}
+            onAddRegistroPeso={addRegistroPeso}
+            onAddFotoProgreso={addFotoProgreso}
+            onDeleteFotoProgreso={deleteFotoProgreso}
           />
         )}
         {tabActiva === 'planes' && (
-          <PlanesTab esPro={data.esPro} setEsPro={setEsPro} />
+          <PlanesTab esPro={data.esPro} onComprarPro={() => setEsPro(true)} />
         )}
       </main>
-      <BottomNav tabActiva={tabActiva} setTabActiva={setTabActiva} />
+
+      <BottomNav tabActiva={tabActiva} onTabChange={setTabActiva} />
     </div>
   );
 }
