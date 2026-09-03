@@ -47,8 +47,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <Header esPro={data.esPro} onLogout={() => setLoggedOut(true)} />
-
+      <Encabezamiento esPro={data.esPro} onLogout={() => establecerCierreDeSesion(verdadero)} onProClick={() => establecerTabActiva('planes')} />
       <main className="max-w-md mx-auto pb-20 min-h-screen">
         {tabActiva === 'rutinas' && (
           <RutinasTab
