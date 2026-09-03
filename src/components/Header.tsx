@@ -27,14 +27,11 @@ export default function Header({ esPro, onLogout }: HeaderProps) {
           >
             <Instagram className="w-5 h-5" />
           </a>
-          <button
-            className={`w-9 h-9 flex items-center justify-center rounded-lg active:scale-90 transition-all ${
-              esPro
-                ? 'text-yellow-400 bg-yellow-400/10'
-                : 'text-gray-500 hover:text-yellow-400 hover:bg-white/5'
-            }`}
-            aria-label="Plan Pro"
-          >
+<button
+  className={`w-9 h-9 flex items-center justify-center rounded-lg active:scale-90 transition-all ${esPro ? 'text-yellow-400 bg-yellow-400/10' : 'text-gray-500 hover:text-yellow-400 hover:bg-white/5'}`}
+  onClick={onProClick}
+  aria-label="Plan Pro"
+>
             <Crown className="w-5 h-5" fill={esPro ? 'currentColor' : 'none'} />
           </button>
           <button
