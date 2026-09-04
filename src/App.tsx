@@ -26,17 +26,22 @@ useEffect(() => {
     setShowInstall(true);
   };
   window.addEventListener('beforeinstallprompt', handler);
-  return () => window.removeEventListener('beforeinstallprompt', handler);
+  // FORZAR que aparezca igual aunque Chrome no lo dispare
+  const timer = setTimeout(() => setShowInstall(true), 2000);
+  return () => {
+    window.removeEventListener('beforeinstallprompt', handler);
+    clearTimeout(timer);
+  };
 }, []);
 
 const instalarApp = async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstall(false);
-    }
+    if (outcome === 'accepted') setShowInstall(false);
     setDeferredPrompt(null);
+  } else {
+    alert('En iPhone: dale a Compartir > Agregar a inicio.\nEn Android: Menú (3 puntitos) > Instalar app / Agregar a pantalla principal');
   }
 };
 
@@ -51,7 +56,7 @@ return(
 {tab==='rutinas'&&<><h2 style={{fontWeight:900}}>HOY: <span style={{color:'#dc2626'}}>{hoy?hoy.nombre:'DESCANSO'}</span></h2>{hoy?hoy.ej.map((e,i)=><div key={i} style={{background:'#161616',border:'1px solid #262626',borderLeft:'3px solid #dc2626',padding:14,borderRadius:12,marginTop:10}}>{e}</div>):<div style={{background:'#161616',padding:14,borderRadius:12,marginTop:10,color:'#777'}}>Domingo libre</div>}</>}
 {tab==='entrenar'&&<><h2 style={{fontWeight:900}}>ENTRENAR</h2>{hoy?.ej.map((e,i)=><div key={i} style={{background:'#161616',padding:14,borderRadius:12,marginTop:10,display:'flex',gap:10}}><div style={{width:32,height:32,background:'#dc2626',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900}}>{i+1}</div>{e}</div>)}<button style={{width:'100%',marginTop:20,background:'#dc2626',border:'none',color:'#fff',fontWeight:900,padding:16,borderRadius:14}}>FINALIZAR</button></>}
 {tab==='progreso'&&<><h2 style={{fontWeight:900}}>PROGRESO</h2><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:12}}><div style={{background:'#161616',padding:16,borderRadius:14}}><div style={{color:'#666',fontSize:12}}>ENTRENOS</div><div style={{fontWeight:900,fontSize:22}}>24</div></div><div style={{background:'#161616',padding:16,borderRadius:14}}><div style={{color:'#666',fontSize:12}}>RACHA</div><div style={{fontWeight:900,fontSize:22,color:'#dc2626'}}>5 días</div></div></div></>}
-{tab==='planes'&&<><h2 style={{fontWeight:900}}>PLANES</h2><div style={{marginTop:12,background:'#dc2626',borderRadius:16,padding:20}}><div style={{fontWeight:900,fontSize:18}}>FORZA PRO</div><div style={{marginTop:6,opacity:0.9}}>$15.000 / mes - Acceso total + Rutinas personalizadas</div><a href="https://wa.me/5491123201025?text=Hola%20FORZA%20quiero%20activar%20el%20plan%20PRO" target="_blank" style={{display:'block',textAlign:'center',marginTop:14,background:'#000',color:'#fff',fontWeight:900,padding:14,borderRadius:12,textDecoration:'none'}}>ACTIVAR POR WHATSAPP</a></div></>}
+{tab==='planes'&&<><h2 style={{fontWeight:900}}>PLANES</h2><div style={{marginTop:12,background:'#dc2626',borderRadius:16,padding:20}}><div style={{fontWeight:900,fontSize:18}}>FORZA PRO</div><div style={{marginTop:6,opacity:0.9}}>$15.000 / mes - Acceso total</div><a href="https://wa.me/5491123201025?text=Hola%20FORZA%20quiero%20activar%20el%20plan%20PRO" target="_blank" style={{display:'block',textAlign:'center',marginTop:14,background:'#000',color:'#fff',fontWeight:900,padding:14,borderRadius:12,textDecoration:'none'}}>ACTIVAR POR WHATSAPP</a></div></>}
 </div>
 
 {showInstall && (
@@ -60,7 +65,7 @@ return(
       <div style={{width:44, height:44, background:'#dc2626', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', fontSize:24}}>📲</div>
       <div style={{flex:1}}>
         <div style={{fontWeight:900, fontSize:14}}>INSTALÁ FORZA GYM</div>
-        <div style={{fontSize:12, color:'#888', marginTop:2}}>Acceso rápido sin entrar al link</div>
+        <div style={{fontSize:12, color:'#888', marginTop:2}}>Tocalo y tenelo como app</div>
       </div>
       <button onClick={()=>setShowInstall(false)} style={{background:'transparent', border:'none', color:'#666', fontSize:20}}>✕</button>
     </div>
