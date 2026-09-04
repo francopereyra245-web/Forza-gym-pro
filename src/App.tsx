@@ -25,7 +25,7 @@ export default function App(){
   const [wsp, setWsp] = useState(() => localStorage.getItem('forza_wsp') || '5491123201025');
   const [socials, setSocials] = useState(() => {
     const s = localStorage.getItem('forza_socials');
-    return s? JSON.parse(s) : { instagram: '', facebook: '', tiktok: '', youtube: '' };
+    return s? JSON.parse(s) : { instagram: 'https://www.instagram.com/forzagympro', facebook: '', tiktok: '', youtube: '' };
   });
 
   const diaHoy = (['Dom','Lun','Mar','Mie','Jue','Vie','Sab'] as Dia[])[new Date().getDay()];
@@ -80,7 +80,7 @@ export default function App(){
         {tab==='entrenar' && <>
           <h2 style={{fontWeight:900}}>ENTRENAR</h2>
           {hoy?.ej.map((e:string,i:number)=><div key={i} style={{background:'#161616',padding:14,borderRadius:12,marginTop:10,display:'flex',gap:10}}><div style={{width:32,height:32,background:'#dc2626',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900}}>{i+1}</div>{e}</div>)}
-          <button style={{width:'100%',marginTop:20,background:'#dc2626',border:'none',color:'#fff',fontWeight:900,padding:16,borderRadius:14}}>FINALIZAR</button>
+          <button style={{width:'100%',marginTop:20,background:'#dc2626',border:'none',color:'#fff',fontWeight:900,padding:16,borderRadius:14}}>FINALIZAR ENTRENO</button>
         </>}
 
         {tab==='progreso' && <>
@@ -95,35 +95,36 @@ export default function App(){
           <h2 style={{fontWeight:900}}>PLANES</h2>
           <div style={{marginTop:12,background:'#dc2626',borderRadius:16,padding:20}}>
             <div style={{fontWeight:900,fontSize:18}}>FORZA PRO</div>
-            <div style={{marginTop:6}}>${precio} / mes</div>
-            <a href={`https://wa.me/${wsp}?text=Hola%20FORZA%20quiero%20PRO`} target="_blank" style={{display:'block',textAlign:'center',marginTop:14,background:'#000',color:'#fff',fontWeight:900,padding:14,borderRadius:12,textDecoration:'none'}}>ACTIVAR POR WHATSAPP</a>
+            <div style={{marginTop:6}}>${precio} / mes - Acceso total</div>
+            <a href={`https://wa.me/${wsp}?text=Hola%20FORZA%20quiero%20activar%20el%20plan%20PRO`} target="_blank" style={{display:'block',textAlign:'center',marginTop:14,background:'#000',color:'#fff',fontWeight:900,padding:14,borderRadius:12,textDecoration:'none'}}>ACTIVAR POR WHATSAPP</a>
           </div>
-          <div style={{marginTop:20}}>
-            <div style={{fontWeight:900,fontSize:12,color:'#666'}}>SEGUINOS</div>
-            <div style={{display:'flex',gap:10,marginTop:10,flexWrap:'wrap'}}>
-              {socials.instagram && <a href={socials.instagram} target="_blank" style={{background:'#161616',padding:'10px 16px',borderRadius:12,color:'#fff',textDecoration:'none'}}>📸 Instagram</a>}
-              {socials.tiktok && <a href={socials.tiktok} target="_blank" style={{background:'#161616',padding:'10px 16px',borderRadius:12,color:'#fff',textDecoration:'none'}}>🎵 TikTok</a>}
-              {socials.facebook && <a href={socials.facebook} target="_blank" style={{background:'#161616',padding:'10px 16px',borderRadius:12,color:'#fff',textDecoration:'none'}}>👍 Facebook</a>}
-              {socials.youtube && <a href={socials.youtube} target="_blank" style={{background:'#161616',padding:'10px 16px',borderRadius:12,color:'#fff',textDecoration:'none'}}>▶️ YouTube</a>}
-              {!socials.instagram &&!socials.tiktok &&!socials.facebook &&!socials.youtube && <div style={{color:'#555',fontSize:13}}>No hay redes aún. Cargalas en ADMIN</div>}
+          <div style={{marginTop:24,background:'#161616',border:'1px solid #262626',borderRadius:16,padding:16}}>
+            <div style={{fontWeight:900,fontSize:12,color:'#888',letterSpacing:1}}>SEGUINOS EN REDES</div>
+            <div style={{display:'flex',gap:10,marginTop:12,flexWrap:'wrap'}}>
+              {socials.instagram && <a href={socials.instagram} target="_blank" style={{background:'#000',border:'1px solid #333',padding:'12px 18px',borderRadius:12,color:'#fff',textDecoration:'none',fontWeight:700}}>📸 Instagram</a>}
+              {socials.tiktok && <a href={socials.tiktok} target="_blank" style={{background:'#000',border:'1px solid #333',padding:'12px 18px',borderRadius:12,color:'#fff',textDecoration:'none',fontWeight:700}}>🎵 TikTok</a>}
+              {socials.facebook && <a href={socials.facebook} target="_blank" style={{background:'#000',border:'1px solid #333',padding:'12px 18px',borderRadius:12,color:'#fff',textDecoration:'none',fontWeight:700}}>👍 Facebook</a>}
+              {socials.youtube && <a href={socials.youtube} target="_blank" style={{background:'#000',border:'1px solid #333',padding:'12px 18px',borderRadius:12,color:'#fff',textDecoration:'none',fontWeight:700}}>▶️ YouTube</a>}
             </div>
           </div>
         </>}
 
         {tab==='admin' && <div>
           <h2 style={{fontWeight:900,color:'#dc2626'}}>PANEL ADMIN</h2>
+          <p style={{color:'#666',fontSize:12}}>Todo editable como Base44. Se guarda solo.</p>
           <div style={{background:'#161616',padding:16,borderRadius:12,marginTop:12}}>
-            <label style={{fontSize:11,color:'#666'}}>PRECIO</label>
+            <label style={{fontSize:11,color:'#666'}}>PRECIO PLAN</label>
             <input value={precio} onChange={e=>setPrecio(e.target.value)} style={{width:'100%',background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8,marginTop:4}}/>
             <label style={{fontSize:11,color:'#666',display:'block',marginTop:10}}>WHATSAPP</label>
             <input value={wsp} onChange={e=>setWsp(e.target.value)} style={{width:'100%',background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8,marginTop:4}}/>
           </div>
           <div style={{background:'#161616',padding:16,borderRadius:12,marginTop:12,border:'1px solid #dc2626'}}>
             <div style={{fontWeight:900,fontSize:13}}>📱 REDES SOCIALES</div>
-            <input placeholder="Instagram https://..." value={socials.instagram} onChange={e=>setSocials({...socials,instagram:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
-            <input placeholder="TikTok https://..." value={socials.tiktok} onChange={e=>setSocials({...socials,tiktok:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
-            <input placeholder="Facebook https://..." value={socials.facebook} onChange={e=>setSocials({...socials,facebook:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
-            <input placeholder="YouTube https://..." value={socials.youtube} onChange={e=>setSocials({...socials,youtube:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
+            <small style={{color:'#555'}}>Dejá vacío si no tenés. Cuando lo agregues aparece solo.</small>
+            <input placeholder="Instagram" value={socials.instagram} onChange={e=>setSocials({...socials,instagram:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
+            <input placeholder="TikTok" value={socials.tiktok} onChange={e=>setSocials({...socials,tiktok:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
+            <input placeholder="Facebook" value={socials.facebook} onChange={e=>setSocials({...socials,facebook:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
+            <input placeholder="YouTube" value={socials.youtube} onChange={e=>setSocials({...socials,youtube:e.target.value})} style={{width:'100%',marginTop:8,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
           </div>
           {rutinas.map((r:any,i:number)=><div key={i} style={{background:'#161616',padding:12,borderRadius:12,marginTop:10}}>
             <div style={{fontWeight:900,fontSize:12}}>{r.dia}</div>
