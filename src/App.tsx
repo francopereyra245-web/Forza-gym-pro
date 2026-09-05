@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://siuxeqradhojnnuoorrx.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhlcXJhZGhvam5udW9vcnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNjQzMTIsImV4cCI6MjA2OTk0MDMxMn0.YT5a2t9H5_qYHhBz9O0K1Q2w3E4R5T6Y7U8I9O0P1A2S3Q'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = createClient(
+  'https://siuxeqradhojnnuoorrx.supabase.co',
+  'sb_publishable_TPm9pkKGm05SBBzXTivilg_PyAiUDxZ'
+)
 
 export default function App() {
   const [rutinas, setRutinas] = useState<any[]>([])
