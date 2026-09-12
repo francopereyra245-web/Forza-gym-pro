@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(
-  'https://siuxeqradhojnnuoorrx.supabase.co',
-  'PEGÁ ACÁ TU KEY sb_publishable_TPm9pkKGm05SBBzXTivilg_... COMPLETA' 
+  'https://siuxeqradhojnuuoorrx.supabase.co',
+  'sb_publishable_TPm9pkKGm05SBBzXTivilg_PyAiUDxZ'
 )
 
 export default function App(){
@@ -35,4 +35,25 @@ export default function App(){
           {rutinas.map((r:any) => (
             <div key={r.id} onClick={()=>verRutina(r)} style={{background:'#222', padding:15, borderRadius:12, marginBottom:10, cursor:'pointer'}}>
               <b>{r.nombre}</b><br/>
-              <small>{r.objetivo} - {r.duracion_total || 60
+              <small>{r.objetivo} - {r.duracion_total || 60} min</small>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'detalle' && seleccionada && (
+        <div>
+          <button onClick={()=>setTab('rutinas')} style={{marginBottom:15}}>← Volver</button>
+          <h2>{seleccionada.nombre}</h2>
+          <p>{seleccionada.descripcion}</p>
+          <h3>Ejercicios ({detalle.length})</h3>
+          {detalle.map((e:any)=>(
+            <div key={e.id} style={{background:'#222', padding:12, borderRadius:10, marginBottom:8}}>
+              {e.nombre} - {e.series} x {e.repeticiones} - {e.descanso_seg || 600}s descanso
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
