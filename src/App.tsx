@@ -1,120 +1,105 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://siuxeqradhojnuuoorrx.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhlcXJhZGhvam5udW9vcnJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMjM5ODksImV4cCI6MjEwMzc5OTk4OX0.Tz9em0VoaQwwvPqvEv5FiUV7hcnWa31ryaGvVzts45I'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
 
-type Tab = 'rutinas' | 'entrenar' | 'progreso' | 'planes' | 'admin'
+type Rutina = {
+  id: string
+  Number: string
+  Description: string
+  Level: string
+}
 
-export default function App(){
-  const [tab,setTab]=useState<Tab>('rutinas')
-  const [rutinas,setRutinas]=useState<any[]>([])
-  const [ejercicios,setEjercicios]=useState<any[]>([])
-  const [sel,setSel]=useState<any>(null)
-  const [loading,setLoading]=useState(true)
-  const [precio,setPrecio]=useState(()=>localStorage.getItem('forza_precio')||'35000')
-  const [wsp,setWsp]=useState(()=>localStorage.getItem('forza_wsp')||'5491123201025')
+const LEVELS = [
+  { key: 'all', label: 'TODAS', color: 'bg-white text-black' },
+  { key: 'Beginner', label: 'BASE BLANCA', color: 'bg-white text-black border border-gray-300' },
+  { key: 'Intermediate', label: 'BASE GRIS', color: 'bg-zinc-400 text-black' },
+  { key: 'Advanced', label: 'BASE AZUL', color: 'bg-blue-600 text-white' },
+  { key: 'Elite', label: 'BASE DORADA', color: 'bg-gradient-to-r from-yellow-400 to-amber-600 text-black' },
+]
 
-  useEffect(()=>{
-    async function load(){
+export default function App() {
+  const [rutinas, setRutinas] = useState<Rutina[]>([])
+  const [filtro, setFiltro] = useState('all')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true)
-      const {data:r}=await supabase.from('rutinas_prearmadas').select('*').order('id')
-      if(r) setRutinas(r)
-      const {data:e}=await supabase.from('ejercicios').select('*').order('id')
-      if(e) setEjercicios(e)
+      const { data, error } = await supabase.from('rutinas_prearmadas').select('*').order('Number')
+      if (error) {
+        console.error(error)
+        alert('Error Supabase: ' + error.message)
+      } else {
+        setRutinas(data || [])
+      }
       setLoading(false)
     }
-    load()
-  },[])
+    fetchData()
+  }, [])
 
-  useEffect(()=>{localStorage.setItem('forza_precio',precio)},[precio])
-  useEffect(()=>{localStorage.setItem('forza_wsp',wsp)},[wsp])
+  const filtradas = filtro === 'all'? rutinas : rutinas.filter(r => r.Level === filtro)
 
-  const listaEj = sel? ejercicios.filter((x:any)=> x.rutina_id===sel.id || x.rutina_prearmada_id===sel.id) : []
+  return (
+    <div className="min-h-screen bg-black text-white font-sans">
+      {/* HEADER */}
+      <header className="border-b border-zinc-800 p-6 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur z-10">
+        <h1 className="text-2xl font-black tracking-widest">FORZA <span className="text-red-600">GYM PRO</span></h1>
+        <a href="https://forza-gym-pro-f1y3.vercel.app" className="text-xs text-zinc-500">f1y3.vercel.app</a>
+      </header>
 
-  return(
-    <div style={{minHeight:'100vh',background:'#0a0a0a',color:'#fff',fontFamily:'system-ui',paddingBottom:80}}>
-      <div style={{padding:14,background:'#000',borderBottom:'1px solid #222',display:'flex',justifyContent:'space-between',alignItems:'center',position:'sticky',top:0,zIndex:20}}>
-        <div style={{fontWeight:900,letterSpacing:1,fontSize:18}}>FORZA <span style={{color:'#dc2626'}}>GYM PRO</span></div>
-        <div style={{fontSize:11,background:'#dc2626',padding:'4px 10px',borderRadius:20,fontWeight:800}}>PRO</div>
-      </div>
+      <main className="max-w-6xl mx-auto p-6">
+        {/* FILTROS */}
+        <div className="flex flex-wrap gap-3 mb-8 mt-4">
+          {LEVELS.map(l => (
+            <button
+              key={l.key}
+              onClick={() => setFiltro(l.key)}
+              className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all ${l.color} ${filtro === l.key? 'ring-2 ring-red-600 scale-105' : 'opacity-70 hover:opacity-100'}`}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
 
-      <div style={{padding:16,maxWidth:600,margin:'0 auto'}}>
-        {tab==='rutinas'&&!sel&&(
-          <>
-            <h2 style={{fontWeight:900,marginBottom:4}}>RUTINAS PREARMADAS</h2>
-            <p style={{fontSize:12,color:'#666',marginBottom:12}}>De Supabase • {rutinas.length} rutinas • Toca para ver</p>
-            {loading?<p style={{color:'#666'}}>Cargando...</p>:
-            rutinas.length===0?<div style={{background:'#dc26261a',padding:14,borderRadius:12,color:'#ff6b6b'}}>No hay rutinas. Creá una en Supabase {'>'} rutinas_prearmadas {'>'} Insert row</div>:
-            <div style={{display:'grid',gap:12}}>
-              {rutinas.map((r:any)=>(
-                <div key={r.id} onClick={()=>setSel(r)} style={{background:'#161616',border:'1px solid #262626',borderLeft:'4px solid #dc2626',padding:16,borderRadius:14,cursor:'pointer'}}>
-                  <div style={{fontWeight:900,color:'#fff'}}>{r.nombre}</div>
-                  <div style={{fontSize:13,opacity:0.7,marginTop:4}}>{r.descripcion||r.objetivo||'Rutina FORZA'}</div>
-                  <div style={{display:'flex',gap:8,marginTop:8}}>
-                    <span style={{fontSize:10,background:'#000',padding:'3px 8px',borderRadius:10,border:'1px solid #333'}}>{r.nivel||'INTERMEDIO'}</span>
-                    <span style={{fontSize:10,background:'#dc2626',padding:'3px 8px',borderRadius:10}}>{r.duracion_semanas||4} SEM</span>
-                  </div>
+        {loading? (
+          <div className="text-center py-20 text-zinc-500 animate-pulse">Cargando rutinas desde Supabase...</div>
+        ) : filtradas.length === 0? (
+          <div className="text-center py-20">
+            <p className="text-xl mb-4">No hay rutinas con ese filtro.</p>
+            <p className="text-zinc-500 text-sm">Tabla: rutinas_prearmadas | Registros totales: {rutinas.length}</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtradas.map(r => (
+              <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-red-600/50 transition">
+                <div className="flex justify-between items-start mb-4">
+                  <span className={`text-[10px] px-2 py-1 rounded-full font-bold ${LEVELS.find(x=>x.key===r.Level)?.color}`}>
+                    {LEVELS.find(x=>x.key===r.Level)?.label || r.Level}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">{r.id.slice(0,8)}</span>
                 </div>
-              ))}
-            </div>}
-          </>
-        )}
-
-        {tab==='rutinas'&&sel&&(
-          <div style={{background:'#161616',padding:18,borderRadius:16,border:'1px solid #222'}}>
-            <button onClick={()=>setSel(null)} style={{background:'#222',border:'none',color:'#fff',padding:'6px 12px',borderRadius:8,marginBottom:12}}>← Volver</button>
-            <h2 style={{color:'#dc2626',fontWeight:900}}>{sel.nombre}</h2>
-            <p style={{opacity:0.7,fontSize:13}}>{sel.descripcion}</p>
-            <h3 style={{marginTop:18,fontWeight:800,fontSize:14}}>EJERCICIOS ({listaEj.length||'Todos'})</h3>
-            {(listaEj.length>0?listaEj:ejercicios.slice(0,8)).map((e:any,i:number)=>(
-              <div key={e.id||i} style={{background:'#0a0a0a',border:'1px solid #222',padding:12,borderRadius:10,marginTop:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                <span style={{fontSize:13}}><b style={{color:'#dc2626'}}>{i+1}.</b> {e.nombre} <span style={{opacity:0.5,fontSize:11}}> • {e.grupo_muscular||e.categoria||'GYM'}</span></span>
-                <span style={{fontWeight:800,color:'#dc2626',fontSize:12}}>{e.series||4}x{e.repeticiones||12}</span>
+                <h3 className="font-black text-lg leading-tight mb-2">{r.Number}</h3>
+                <p className="text-sm text-zinc-400 mb-4">{r.Description}</p>
+                <div className="bg-black rounded-xl p-3 text-xs text-zinc-300">
+                  <p className="font-bold text-white mb-1">Incluye:</p>
+                  <p>✓ Remo con Banda, Press, Sentadilla, Peso Muerto</p>
+                  <p className="mt-2 text-red-500 font-bold">→ VER RUTINA COMPLETA</p>
+                </div>
               </div>
             ))}
-            <button onClick={()=>setTab('entrenar')} style={{width:'100%',marginTop:18,background:'#dc2626',border:'none',color:'#fff',fontWeight:900,padding:14,borderRadius:12}}>EMPEZAR AHORA ▶️</button>
           </div>
         )}
 
-        {tab==='entrenar'&&(
-          <><h2 style={{fontWeight:900}}>ENTRENAR</h2>
-          <div style={{background:'#161616',padding:24,borderRadius:16,marginTop:12,textAlign:'center',border:'1px solid #222'}}>
-            <div style={{fontSize:42}}>🔥</div>
-            <div style={{fontWeight:900,marginTop:8,fontSize:18}}>{sel?sel.nombre:'Elegí una rutina'}</div>
-            <div style={{opacity:0.6,fontSize:12,marginTop:4}}>{sel?`Objetivo: ${sel.objetivo||'Fuerza'}`:'Andá a RUTINAS y toca una'}</div>
-            <button style={{width:'100%',marginTop:18,background:'#dc2626',border:'none',color:'#fff',fontWeight:900,padding:14,borderRadius:12}}>FINALIZAR ENTRENO ✓</button>
-          </div></>
-        )}
-
-        {tab==='progreso'&&(<><h2 style={{fontWeight:900}}>PROGRESO</h2><div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:12}}><div style={{background:'#161616',padding:16,borderRadius:14,border:'1px solid #222'}}><div style={{color:'#666',fontSize:10}}>ENTRENOS</div><div style={{fontWeight:900,fontSize:24}}>24</div></div><div style={{background:'#161616',padding:16,borderRadius:14,border:'1px solid #222'}}><div style={{color:'#666',fontSize:10}}>RACHA</div><div style={{fontWeight:900,fontSize:24,color:'#dc2626'}}>5 días</div></div></div></>)}
-
-        {tab==='planes'&&(<><h2 style={{fontWeight:900}}>PLANES</h2><div style={{marginTop:12,background:'linear-gradient(135deg,#dc2626,#991b1b)',borderRadius:16,padding:20,textAlign:'center'}}><div style={{fontWeight:900,fontSize:20}}>FORZA PRO 👑</div><div style={{fontSize:36,fontWeight:900,marginTop:6}}>${precio}</div><div style={{opacity:0.9,fontSize:13}}>/ mes • Acceso total • Rutinas ilimitadas</div><a href={`https://wa.me/${wsp}?text=Hola%20FORZA%20quiero%20el%20plan%20PRO%20$${precio}`} target="_blank" style={{display:'block',marginTop:16,background:'#000',color:'#fff',fontWeight:900,padding:14,borderRadius:12,textDecoration:'none'}}>ACTIVAR POR WHATSAPP</a></div></>)}
-
-        {tab==='admin'&&(
-          <div>
-            <h2 style={{fontWeight:900,color:'#dc2626'}}>ADMIN - PANEL DE VENTAS</h2>
-            <p style={{fontSize:11,color:'#666'}}>Solo vos ves esto. Cambias precio y WhatsApp y se actualiza al toque para tus clientes.</p>
-            <div style={{background:'#161616',padding:16,borderRadius:12,marginTop:12,border:'1px solid #222'}}>
-              <label style={{fontSize:10,color:'#888'}}>PRECIO PLAN PRO</label>
-              <input value={precio} onChange={e=>setPrecio(e.target.value)} style={{width:'100%',marginTop:6,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
-              <label style={{fontSize:10,color:'#888',marginTop:12,display:'block'}}>WHATSAPP VENTAS (con 549)</label>
-              <input value={wsp} onChange={e=>setWsp(e.target.value)} style={{width:'100%',marginTop:6,background:'#000',border:'1px solid #333',color:'#fff',padding:10,borderRadius:8}}/>
-              <div style={{marginTop:12,fontSize:11,color:'#666'}}>Rutinas cargadas: {rutinas.length} • Ejercicios: {ejercicios.length}</div>
-            </div>
-            <div style={{background:'#dc26261a',padding:12,borderRadius:10,marginTop:12,fontSize:11,color:'#ff6b6b'}}>Para agregar más rutinas: Supabase {'>'} Table Editor {'>'} rutinas_prearmadas {'>'} Insert Row. Aparecen solas en la app.</div>
-          </div>
-        )}
-      </div>
-
-      <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#000',borderTop:'1px solid #222',display:'flex',justifyContent:'space-around',padding:'8px 0'}}>
-        {[{id:'rutinas',l:'RUTINAS',i:'💪'},{id:'entrenar',l:'ENTRENAR',i:'▶️'},{id:'progreso',l:'PROGRESO',i:'📊'},{id:'planes',l:'PLANES',i:'👑'},{id:'admin',l:'ADMIN',i:'⚙️'}].map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id as any)} style={{background:tab===t.id?'#dc26261a':'transparent',border:'none',color:tab===t.id?'#dc2626':'#666',display:'flex',flexDirection:'column',alignItems:'center',padding:'6px 10px',borderRadius:10}}>
-            <span>{t.i}</span><span style={{fontSize:9,fontWeight:800}}>{t.l}</span>
-          </button>
-        ))}
-      </div>
+        <div className="mt-12 p-6 bg-gradient-to-r from-red-600 to-red-900 rounded-2xl text-center">
+          <h2 className="text-2xl font-black mb-2">¿LISTO PARA VENDER FORZA PRO?</h2>
+          <p className="text-sm opacity-90 mb-4">Tu app ya está en: forza-gym-pro-f1y3.vercel.app</p>
+          <p className="text-xs">Conectá Mercado Pago y empezá a cobrar.</p>
+        </div>
+      </main>
     </div>
   )
 }
