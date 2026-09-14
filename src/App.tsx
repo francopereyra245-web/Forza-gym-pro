@@ -1,21 +1,28 @@
-import { useState, useEffect } from 'react'
-
-type Ejercicio = { id: string; nombre: string; nivel: string }
-type Socio = { id: string; nombre: string; esYo: boolean }
+import { useState } from 'react'
 
 export default function App(){
-  const [tab, setTab] = useState('Categorías')
-  const [nivel, setNivel] = useState('prin')
-  const [ejercicios, setEjercicios] = useState<Ejercicio[]>(()=>JSON.parse(localStorage.getItem('fg-ex')||'[]'))
-  const [socios, setSocios] = useState<Socio[]>(()=>JSON.parse(localStorage.getItem('fg-socios')||'[{"id":"yo","nombre":"Yo (Dueño)","esYo":true}]'))
-  const [nEj, setNEj] = useState('')
-  const [nSocio, setNSocio] = useState('')
-  const [chat, setChat] = useState(false)
+  const [tab, setTab] = useState('Tienda')
+  console.log('TAB ACTUAL:', tab)
 
-  useEffect(()=>localStorage.setItem('fg-ex', JSON.stringify(ejercicios)),[ejercicios])
-  useEffect(()=>localStorage.setItem('fg-socios', JSON.stringify(socios)),[socios])
+  return (
+    <div style={{background:'black', color:'white', minHeight:'100vh'}}>
+      <div style={{padding:20, textAlign:'center', fontSize:24, fontWeight:900, borderBottom:'2px solid red'}}>
+        ESTAS EN: {tab}
+      </div>
 
-  const niveles = [
-    {id:'prin', nombre:'PRINCIPIANTE', detalle:'Blanco', badge:'GRATIS', color:'#ff3b30'},
-    {id:'medio', nombre:'MEDIO', detalle:'Gris', badge:'PRO 🔒', color:'#8b0000'},
-    {id:'avanz', nombre:'AVANZADO', detalle:'Azul',
+      <div style={{padding:20}}>
+        {tab==='Tienda' && <h1>✅ TIENDA ANDA</h1>}
+        {tab==='Categorías' && <h1>✅ CATEGORIAS ANDA</h1>}
+        {tab==='Favoritos' && <h1>✅ FAVORITOS ANDA</h1>}
+        {tab==='Pedidos' && <h1>✅ PEDIDOS ANDA</h1>}
+        {tab==='Cuenta' && <h1>✅ CUENTA ANDA</h1>}
+      </div>
+
+      <div style={{position:'fixed', bottom:0, left:0, right:0, height:70, background:'#111', display:'flex', borderTop:'2px solid red'}}>
+        <div onClick={()=>setTab('Tienda')} style={{flex:1, background:tab==='Tienda'?'red':'#111', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900}}>TIENDA</div>
+        <div onClick={()=>setTab('Categorías')} style={{flex:1, background:tab==='Categorías'?'red':'#111', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900}}>CATEGORIAS</div>
+        <div onClick={()=>setTab('Cuenta')} style={{flex:1, background:tab==='Cuenta'?'red':'#111', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900}}>CUENTA</div>
+      </div>
+    </div>
+  )
+}
