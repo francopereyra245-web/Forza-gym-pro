@@ -69,7 +69,7 @@ export default function App(){
       </div>
 
       <div style={{display:"flex",gap:8,padding:"0 12px 12px",overflowX:"auto"}}>
-        {["ALL","DIET","SUPPLEMENTS","APPAREL","EQUIPMENT"].map(c=>(
+        {["TODO","DIETA","SUPLEMENTOS","ROPA","EQUIPOS"].map(c=>(
           <div key={c} onClick={()=>setFiltro(c)} style={{padding:"8px 14px",borderRadius:20,fontSize:11,fontWeight:900,background:filtro===c?"red":"#222"}}>{c}</div>
         ))}
       </div>
