@@ -1,31 +1,71 @@
 import { useState, useEffect } from 'react'
-const ROJO='#E10600'; const NEGRO='#0A0A0A'
-const getM=(n:string)=>{const x=n.toLowerCase(); if(x.includes('pecho')||x.includes('press')||x.includes('banca')) return 'PECHO'; if(x.includes('espalda')||x.includes('remo')||x.includes('dorsal')) return 'ESPALDA'; if(x.includes('hombro')) return 'HOMBROS'; if(x.includes('bicep')) return 'BICEPS'; if(x.includes('tricep')) return 'TRICEPS'; return 'FORZA'}
+
 export default function App(){
   const [tab,setTab]=useState('rutinas')
-  const [rutinas,setRutinas]=useState<any[]>(()=>JSON.parse(localStorage.getItem('fr')||'[{"id":1,"nombre":"LUNES PECHO","dia":"Lun","ejercicios":[{"nombre":"Press Banca"}]}]'))
-  const [tienda,setTienda]=useState<any[]>(()=>JSON.parse(localStorage.getItem('ft')||'[]'))
-  const [precio,setPrecio]=useState(()=>localStorage.getItem('fp')||'4990')
-  const [alias,setAlias]=useState(()=>localStorage.getItem('fa')||'forza.mp')
+  const [rutinas,setRutinas]=useState(()=>{try{return JSON.parse(localStorage.getItem('fr')||'[]')}catch{return []}})
   const [nR,setNR]=useState(''); const [nE,setNE]=useState(''); const [nD,setND]=useState('Lun')
-  useEffect(()=>localStorage.setItem('fr',JSON.stringify(rutinas)),[rutinas])
-  useEffect(()=>{localStorage.setItem('fp',precio); localStorage.setItem('fa',alias)},[precio,alias])
+  const ROJO='#E10600'
+
+  useEffect(()=>{localStorage.setItem('fr',JSON.stringify(rutinas))},[rutinas])
+
+  const getM=(n:string)=>{
+    const x=n.toLowerCase()
+    if(x.includes('pecho')||x.includes('press')||x.includes('banca')) return 'PECHO'
+    if(x.includes('espalda')||x.includes('remo')) return 'ESPALDA'
+    if(x.includes('hombro')) return 'HOMBROS'
+    if(x.includes('bicep')) return 'BICEPS'
+    if(x.includes('tricep')) return 'TRICEPS'
+    if(x.includes('pierna')||x.includes('sentadilla')) return 'PIERNAS'
+    return 'FORZA'
+  }
+
   return(
-    <div style={{background:NEGRO,minHeight:'100vh',color:'white',maxWidth:440,margin:'0 auto',paddingBottom:90,fontFamily:'system-ui'}}>
-      <div style={{padding:12,background:'#000',borderBottom:`2px solid ${ROJO}`,display:'flex',alignItems:'center',gap:10,position:'sticky',top:0,zIndex:10}}>
+    <div style={{background:'#0A0A0A',minHeight:'100vh',color:'white',maxWidth:440,margin:'0 auto',paddingBottom:90,fontFamily:'system-ui'}}>
+      <div style={{padding:12,background:'#000',borderBottom:`2px solid ${ROJO}`,display:'flex',alignItems:'center',gap:10,position:'sticky',top:0}}>
         <div style={{width:36,height:36,background:ROJO,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900}}>⚡</div>
         <div style={{fontWeight:900}}>FORZA <span style={{color:ROJO}}>GYM PRO</span></div>
-        <div style={{marginLeft:'auto',fontSize:8,background:ROJO,padding:'6px 10px',borderRadius:20,fontWeight:900}}>MP {alias}</div>
       </div>
-      {tab==='rutinas' && <div style={{padding:12}}>
-        <div style={{background:`linear-gradient(90deg, ${ROJO}, #600)`,padding:14,borderRadius:16,display:'flex',justifyContent:'space-between'}}><div><div style={{fontSize:10}}>🔔 HOY TE TOCA</div><b>{rutinas[0]?.nombre}</b></div><button onClick={()=>{if(Notification.permission!=='granted')Notification.requestPermission();else new Notification('FORZA: '+rutinas[0]?.nombre)}} style={{background:'white',color:'black',border:'none',padding:'10px 16px',borderRadius:20,fontWeight:900,fontSize:11}}>ALARMA</button></div>
-        <div style={{marginTop:12,background:'#111',padding:12,borderRadius:14,border:'1px solid #222'}}><b style={{fontSize:11}}>NUEVA RUTINA</b><div style={{display:'flex',gap:6,marginTop:8}}><input value={nR} onChange={e=>setNR(e.target.value)} placeholder="LUNES PECHO" style={{flex:1,background:'#000',border:'1px solid #333',color:'white',padding:11,borderRadius:10}}/><select value={nD} onChange={e=>setND(e.target.value)} style={{background:'#000',border:'1px solid #333',color:'white',borderRadius:10}}><option>Lun</option><option>Mar</option><option>Mie</option><option>Jue</option><option>Vie</option><option>Sab</option><option>Dom</option></select></div><div style={{display:'flex',gap:6,marginTop:6}}><input value={nE} onChange={e=>setNE(e.target.value)} placeholder="Press Banca" style={{flex:1,background:'#000',border:'1px solid #333',color:'white',padding:11,borderRadius:10}}/><button onClick={()=>{if(!nR||!nE) return; setRutinas([...rutinas,{id:Date.now(),nombre:nR.toUpperCase(),dia:nD,ejercicios:[{nombre:nE}]}]); setNE('')}} style={{background:ROJO,border:'none',color:'white',padding:'0 18px',borderRadius:10,fontWeight:900}}>+</button></div></div>
-        {rutinas.map((r:any)=><div key={r.id} style={{marginTop:12,background:'#0f0f0f',borderRadius:18,border:'1px solid #1e1e1e'}}><div style={{padding:12,display:'flex',justifyContent:'space-between'}}><b style={{fontSize:12}}>{r.nombre} • {r.dia}</b><button onClick={()=>setRutinas(rutinas.filter((x:any)=>x.id!==r.id))} style={{background:'none',border:'none',color:'#666',fontSize:10}}>Borrar</button></div>{r.ejercicios.map((ej:any,i:number)=><div key={i} style={{display:'flex',gap:12,padding:12,borderTop:'1px solid #151515',background:'#0a0a0a'}}><div style={{width:90,height:90,background:ROJO,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:11}}>{getM(ej.nombre)}</div><div><div style={{fontWeight:900,fontSize:13}}>{ej.nombre.toUpperCase()}</div><div style={{fontSize:10,color:ROJO,fontWeight:900,marginTop:4}}>● {getM(ej.nombre)}</div></div></div>)}</div>)}
-      </div>}
-      {tab==='tienda' && <div style={{padding:12}}><b>TIENDA • GRATIS Y PRO</b>{tienda.map((p:any)=><div key={p.id} style={{marginTop:10,background:'#121212',padding:12,borderRadius:14,border:'1px solid #222'}}><b>{p.nombre}</b></div>)}</div>}
-      {tab==='admin' && <div style={{padding:12}}><b>ADMIN</b><div style={{marginTop:10,background:'#121212',padding:12,borderRadius:12,border:'1px solid #222'}}><div style={{fontSize:10}}>ALIAS MP</div><input value={alias} onChange={e=>setAlias(e.target.value)} style={{width:'100%',background:'#000',border:'1px solid #333',color:'white',padding:8,borderRadius:8,marginTop:4}}/><div style={{fontSize:10,marginTop:8}}>PRECIO PRO</div><input value={precio} onChange={e=>setPrecio(e.target.value)} style={{width:'100%',background:'#000',border:'1px solid #333',color:'white',padding:8,borderRadius:8,marginTop:4}}/></div></div>}
-      {tab==='planes' && <div style={{padding:12}}><div style={{background:'#121212',border:'1px solid #333',borderRadius:16,padding:14}}><b>GRATIS $0</b></div><div style={{marginTop:10,background:'#1a0505',border:`2px solid ${ROJO}`,borderRadius:16,padding:14}}><b>PRO ${precio}</b><div style={{fontSize:11,marginTop:4}}>MP a {alias}</div></div></div>}
-      <div style={{position:'fixed',bottom:0,left:0,right:0,maxWidth:440,margin:'0 auto',background:'#000',borderTop:'1px solid #1a1a1a',display:'flex',justifyContent:'space-around',padding:'10px 0'}}>{[{id:'rutinas',l:'RUTINAS'},{id:'tienda',l:'TIENDA'},{id:'admin',l:'ADMIN'},{id:'planes',l:'PLANES'}].map((t:any)=><button key={t.id} onClick={()=>setTab(t.id)} style={{background:'none',border:'none',color:tab===t.id?ROJO:'#555',fontSize:10,fontWeight:900}}>{t.l}</button>)}</div>
+
+      {tab==='rutinas' && (
+        <div style={{padding:12}}>
+          <div style={{background:ROJO,padding:14,borderRadius:16}}>
+            <div style={{fontSize:10}}>HOY TE TOCA</div>
+            <div style={{fontWeight:900,fontSize:18}}>{rutinas[0]?.nombre || 'LUNES PECHO'}</div>
+          </div>
+
+          <div style={{marginTop:12,background:'#111',padding:12,borderRadius:14,border:'1px solid #222'}}>
+            <input value={nR} onChange={e=>setNR(e.target.value)} placeholder="Nombre: LUNES PECHO" style={{width:'100%',background:'#000',border:'1px solid #333',color:'white',padding:10,borderRadius:10}}/>
+            <div style={{display:'flex',gap:6,marginTop:6}}>
+              <input value={nE} onChange={e=>setNE(e.target.value)} placeholder="Ejercicio: Press Banca" style={{flex:1,background:'#000',border:'1px solid #333',color:'white',padding:10,borderRadius:10}}/>
+              <select value={nD} onChange={e=>setND(e.target.value)} style={{background:'#000',border:'1px solid #333',color:'white',borderRadius:10}}><option>Lun</option><option>Mar</option><option>Mie</option><option>Jue</option><option>Vie</option></select>
+              <button onClick={()=>{if(!nR||!nE) return; setRutinas([...rutinas,{id:Date.now(),nombre:nR.toUpperCase(),dia:nD,ejercicios:[{nombre:nE}]}]); setNE('')}} style={{background:ROJO,border:'none',color:'white',padding:'0 16px',borderRadius:10,fontWeight:900}}>+</button>
+            </div>
+          </div>
+
+          {rutinas.map((r:any)=>(
+            <div key={r.id} style={{marginTop:12,background:'#111',borderRadius:16,border:'1px solid #222'}}>
+              <div style={{padding:12,display:'flex',justifyContent:'space-between'}}><b style={{fontSize:12}}>{r.nombre} • {r.dia}</b><button onClick={()=>setRutinas(rutinas.filter((x:any)=>x.id!==r.id))} style={{background:'none',border:'none',color:'#666',fontSize:10}}>Borrar</button></div>
+              {r.ejercicios.map((ej:any,i:number)=>(
+                <div key={i} style={{display:'flex',gap:12,padding:12,borderTop:'1px solid #222',alignItems:'center'}}>
+                  <div style={{width:80,height:80,background:ROJO,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:11}}>{getM(ej.nombre)}</div>
+                  <div><div style={{fontWeight:900}}>{ej.nombre.toUpperCase()}</div><div style={{fontSize:10,color:ROJO,fontWeight:900}}>● {getM(ej.nombre)}</div></div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==='tienda' && <div style={{padding:12}}><b>TIENDA • GRATIS Y PRO</b><div style={{marginTop:10,background:'#111',padding:12,borderRadius:12}}>Activa</div></div>}
+      {tab==='admin' && <div style={{padding:12}}><b>ADMIN</b><div style={{marginTop:10,background:'#111',padding:12,borderRadius:12}}>Panel OK</div></div>}
+      {tab==='planes' && <div style={{padding:12}}><b>PLANES</b><div style={{marginTop:10,background:'#111',padding:12,borderRadius:12,border:`1px solid ${ROJO}`}}>PRO $4990</div></div>}
+
+      <div style={{position:'fixed',bottom:0,left:0,right:0,maxWidth:440,margin:'0 auto',background:'#000',borderTop:'1px solid #222',display:'flex',justifyContent:'space-around',padding:'10px 0'}}>
+        <button onClick={()=>setTab('rutinas')} style={{background:'none',border:'none',color:tab==='rutinas'?ROJO:'#555',fontSize:10,fontWeight:900}}>RUTINAS</button>
+        <button onClick={()=>setTab('tienda')} style={{background:'none',border:'none',color:tab==='tienda'?ROJO:'#555',fontSize:10,fontWeight:900}}>TIENDA</button>
+        <button onClick={()=>setTab('admin')} style={{background:'none',border:'none',color:tab==='admin'?ROJO:'#555',fontSize:10,fontWeight:900}}>ADMIN</button>
+        <button onClick={()=>setTab('planes')} style={{background:'none',border:'none',color:tab==='planes'?ROJO:'#555',fontSize:10,fontWeight:900}}>PLANES</button>
+      </div>
     </div>
   )
 }
